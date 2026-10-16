@@ -297,7 +297,8 @@ function step(dt) {
   }
 
   // car pose
-  car.group.position.set(CAR_X, y, 0);
+  // after a crash the wreck tumbles toward the camera so it never hides behind a tower
+  car.group.position.set(CAR_X, y, state === 'dead' ? Math.min(deadT * 7, 3.2) : 0);
   if (state === 'dead') car.group.rotation.z += spin * dt;
   else car.group.rotation.z = THREE.MathUtils.damp(car.group.rotation.z, THREE.MathUtils.clamp(vy * 0.035, -0.55, 0.38), 12, dt);
   car.update(dt, t, { vy, speed, alive: state !== 'dead' });
