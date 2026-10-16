@@ -308,7 +308,7 @@ function step(dt) {
   shake = Math.max(0, shake - dt * 2.2);
   const s = shake * shake * 0.6;
   // vertical follow: frame a 16 m band that slides with the car but always keeps ground or gap edges readable
-  camY = THREE.MathUtils.damp(camY, THREE.MathUtils.clamp(y * 0.55 + 4.6, 8.2, 11.4), 4, dt);
+  camY = THREE.MathUtils.damp(camY, THREE.MathUtils.clamp(y * 0.55 + 4.6, state === 'dead' ? 5.6 : 8.2, 11.4), state === 'dead' ? 2.5 : 4, dt);
   camera.position.set(camBase.x + (Math.random() - 0.5) * s, camY + 0.3 + (Math.random() - 0.5) * s, camBase.z);
   const la = camera.userData.lookAt;
   camera.lookAt(la.x, camY, la.z);
