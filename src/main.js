@@ -10,7 +10,7 @@ import { createFX } from './fx.js';
 import { createAudio } from './audio.js';
 
 const params = new URLSearchParams(location.search);
-const BOT = params.has('bot');
+let BOT = params.has('bot');
 const REC = params.has('rec');
 if (REC) document.documentElement.classList.add('rec');
 
@@ -69,15 +69,15 @@ function frame() {
   composer.setSize(w, h);
   camera.aspect = w / h;
   const vFov = THREE.MathUtils.degToRad(camera.fov);
-  const needH = 22.5, needW = 30;
+  const needH = 16.5, needW = 22;
   const dH = needH / 2 / Math.tan(vFov / 2);
   const dW = needW / 2 / (Math.tan(vFov / 2) * camera.aspect);
   const d = Math.max(dH, dW);
   // on wide screens shift view so the car sits left and we see what is coming
   const visW = 2 * d * Math.tan(vFov / 2) * camera.aspect;
   const lookX = CAR_X + visW * 0.27; // car sits at ~23% from the left edge
-  camBase.set(lookX - 1.5, 9.6, d);
-  camera.userData.lookAt = new THREE.Vector3(lookX, 9.4, 0);
+  camBase.set(lookX - 1.5, 0, d);
+  camera.userData.lookAt = new THREE.Vector3(lookX, 0, 0);
   camera.updateProjectionMatrix();
 }
 addEventListener('resize', frame);
@@ -95,6 +95,7 @@ let state = 'title';
 let y = 9, vy = 0, speed = SPEED0, score = 0, dist = 0, nextSpawn = 0;
 let deadT = 0, shake = 0, multT = 0, toastT = 0, botCooldown = 0, spawnCount = 0;
 let spin = 0;
+let camY = 9.6;
 const pairs = [];
 const tmp = new THREE.Vector3();
 const down = new THREE.Vector3(0, -1, 0);
@@ -306,10 +307,11 @@ function step(dt) {
   // camera
   shake = Math.max(0, shake - dt * 2.2);
   const s = shake * shake * 0.6;
-  const follow = (y - 9.5) * 0.12;
-  camera.position.set(camBase.x + (Math.random() - 0.5) * s, camBase.y + follow + (Math.random() - 0.5) * s, camBase.z);
+  // vertical follow: frame a 16 m band that slides with the car but always keeps ground or gap edges readable
+  camY = THREE.MathUtils.damp(camY, THREE.MathUtils.clamp(y * 0.55 + 4.6, 8.2, 11.4), 4, dt);
+  camera.position.set(camBase.x + (Math.random() - 0.5) * s, camY + 0.3 + (Math.random() - 0.5) * s, camBase.z);
   const la = camera.userData.lookAt;
-  camera.lookAt(la.x, la.y + follow * 0.6, la.z);
+  camera.lookAt(la.x, camY, la.z);
   const targetFov = 42 + (speed - SPEED0) * 0.18;
   if (Math.abs(camera.fov - targetFov) > 0.01) { camera.fov = THREE.MathUtils.damp(camera.fov, targetFov, 3, dt); frame(); }
 
@@ -330,6 +332,7 @@ if (REC) {
   window.__step = (dt) => { step(dt); };
   window.__events = () => events;
   window.__time = () => t;
+  window.__bot = (on) => { BOT = on; };
   window.__state = () => ({ state, score, speed, y, alive: state === 'play' });
   window.__start = () => start();
   window.__flap = () => flap();
