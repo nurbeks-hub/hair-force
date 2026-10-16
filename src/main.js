@@ -75,7 +75,7 @@ function frame() {
   const d = Math.max(dH, dW);
   // on wide screens shift view so the car sits left and we see what is coming
   const visW = 2 * d * Math.tan(vFov / 2) * camera.aspect;
-  const lookX = CAR_X + visW * 0.27; // car sits at ~23% from the left edge
+  const lookX = CAR_X + visW * 0.18; // car sits at ~23% from the left edge
   camBase.set(lookX - 1.5, 0, d);
   camera.userData.lookAt = new THREE.Vector3(lookX, 0, 0);
   camera.updateProjectionMatrix();
@@ -176,6 +176,7 @@ function die() {
 }
 
 function showOver() {
+  scoreEl.style.opacity = 0;
   overEl.style.display = 'flex';
   requestAnimationFrame(() => overEl.classList.remove('hidden'));
 }

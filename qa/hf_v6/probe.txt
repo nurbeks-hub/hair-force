@@ -1,0 +1,3 @@
+stream|index=0|codec_name=h264|codec_type=video|width=1440|height=1080|pix_fmt=yuv420p|color_space=bt709|color_transfer=bt709|color_primaries=bt709|r_frame_rate=30/1|nb_frames=587|
+stream|index=1|codec_name=aac|codec_type=audio|sample_rate=48000|channels=2|r_frame_rate=0/0|nb_frames=917
+format|duration=19.567000|size=38902793
